@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/chart';
 import { burndownData } from '@/lib/data';
 import { cn } from '@/lib/utils';
-import { TrendingDown, TrendingUp } from 'lucide-react';
 import {
   Line,
   LineChart,
@@ -24,7 +23,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
 } from 'recharts';
 
 const chartConfig = {
@@ -70,7 +68,7 @@ export function BurndownChartCard({ className }: { className?: string }) {
               cursor={false}
               content={<ChartTooltipContent indicator="dot" />}
             />
-            <Legend content={<ChartLegendContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
             <Line
               dataKey="ideal"
               type="monotone"
