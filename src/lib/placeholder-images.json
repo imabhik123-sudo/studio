@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "user-avatar-1",
+      "description": "User avatar for Alice Johnson",
+      "imageUrl": "https://picsum.photos/seed/user1/40/40",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "user-avatar-2",
+      "description": "User avatar for Bob Williams",
+      "imageUrl": "https://picsum.photos/seed/user2/40/40",
+      "imageHint": "man portrait"
+    },
+    {
+      "id": "user-avatar-3",
+      "description": "User avatar for Charlie Brown",
+      "imageUrl": "https://picsum.photos/seed/user3/40/40",
+      "imageHint": "man smiling"
+    },
+    {
+      "id": "user-avatar-4",
+      "description": "User avatar for Diana Miller",
+      "imageUrl": "https://picsum.photos/seed/user4/40/40",
+      "imageHint": "woman glasses"
+    },
+    {
+      "id": "task-attachment-1",
+      "description": "UI mockup for login screen",
+      "imageUrl": "https://picsum.photos/seed/mockup1/600/400",
+      "imageHint": "design wireframe"
+    },
+    {
+      "id": "task-attachment-2",
+      "description": "API schema design document",
+      "imageUrl": "https://picsum.photos/seed/doc1/600/400",
+      "imageHint": "document text"
+    }
+  ]
 }
