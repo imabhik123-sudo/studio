@@ -61,3 +61,12 @@ export type Activity = {
   target: string;
   createdAt: string;
 };
+
+export type ChatMessage = {
+  id: string;
+  sender: User;
+  receiver: User;
+  content: string;
+  createdAt: string;
+  isRead: boolean;
+};

@@ -5,6 +5,7 @@ import {
   NavLinkData,
   Activity,
   TaskStatus,
+  ChatMessage,
 } from './types';
 import {
   LayoutDashboard,
@@ -12,9 +13,10 @@ import {
   Layers,
   BarChart3,
   Settings,
+  MessageSquare,
 } from 'lucide-react';
 import { PlaceHolderImages } from './placeholder-images';
-import { addDays, formatISO, subDays } from 'date-fns';
+import { addDays, formatISO, subDays, subMinutes } from 'date-fns';
 
 const userAvatars = PlaceHolderImages.filter(
   (img) =>
@@ -167,6 +169,7 @@ export const navLinks: NavLinkData[] = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/sprints', label: 'Sprints', icon: IterationCw },
   { href: '/backlog', label: 'Tasks', icon: Layers },
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/reports', label: 'Reports', icon: BarChart3 },
 ];
 
@@ -225,3 +228,75 @@ export const burndownData = [
 ]
 
 export const getTasksByStatus = (status: TaskStatus) => tasks.filter(task => task.status === status);
+
+export const chatMessages: ChatMessage[] = [
+  {
+    id: 'msg-1',
+    sender: users[1],
+    receiver: currentUser,
+    content: "Hey Alice, just wanted to check in on the progress for TASK-102. How's the authentication API coming along?",
+    createdAt: formatISO(subMinutes(now, 65)),
+    isRead: false,
+  },
+  {
+    id: 'msg-2',
+    sender: currentUser,
+    receiver: users[1],
+    content: "Hi Bob! It's going well. I've hit a small snag with the token refresh logic, but I should have it sorted out by EOD.",
+    createdAt: formatISO(subMinutes(now, 60)),
+    isRead: true,
+  },
+  {
+    id: 'msg-3',
+    sender: users[1],
+    receiver: currentUser,
+    content: "Great to hear. Let me know if you need a second pair of eyes on it. Happy to help.",
+    createdAt: formatISO(subMinutes(now, 58)),
+    isRead: false,
+  },
+  {
+    id: 'msg-4',
+    sender: users[2],
+    receiver: currentUser,
+    content: "Quick question about the dashboard design. Do we have the final assets for the icons?",
+    createdAt: formatISO(subDays(now, 1)),
+    isRead: true,
+  },
+  {
+    id: 'msg-5',
+    sender: currentUser,
+    receiver: users[2],
+    content: "Hey Charlie, I believe so. They should be in the shared Figma file. I'll send you the link.",
+    createdAt: formatISO(subDays(now, 1)),
+    isRead: true,
+  },
+  {
+    id: 'msg-6',
+    sender: users[3],
+    receiver: currentUser,
+    content: "The CI/CD pipeline is ready for its first test run. Let me know when you have a feature branch ready.",
+    createdAt: formatISO(subDays(now, 2)),
+    isRead: true,
+  }
+];
+
+export const getChatsForCurrentUser = () => {
+    const chats: Record<string, ChatMessage[]> = {};
+    chatMessages.forEach(message => {
+        const otherUser = message.sender.id === currentUser.id ? message.receiver : message.sender;
+        if (!chats[otherUser.id]) {
+            chats[otherUser.id] = [];
+        }
+        chats[otherUser.id].push(message);
+    });
+
+    for (const userId in chats) {
+        chats[userId].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    }
+
+    return chats;
+}
+
+export const getUserById = (id: string): User | undefined => {
+    return users.find(user => user.id === id);
+}
