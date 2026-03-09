@@ -31,13 +31,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { users } from '@/lib/data';
+import { users, sprints } from '@/lib/data';
 import { TaskPriority, TaskStatus } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, formatISO } from 'date-fns';
 import { useState } from 'react';
+import { useTasks } from '@/context/TaskProvider';
 
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -46,12 +47,17 @@ const taskSchema = z.object({
   priority: z.enum(['Low', 'Medium', 'High', 'Urgent']),
   assigneeId: z.string().optional(),
   dueDate: z.date().optional(),
+  sprintId: z.string().optional(),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
 
 export function AddTaskDialog() {
   const [open, setOpen] = useState(false);
+  const { addTask } = useTasks();
+  const today = new Date().toISOString();
+  const availableSprints = sprints.filter(sprint => sprint.endDate >= today);
+
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -59,12 +65,18 @@ export function AddTaskDialog() {
       description: '',
       status: 'To Do',
       priority: 'Medium',
+      sprintId: 'backlog'
     },
   });
 
   function onSubmit(values: TaskFormValues) {
-    console.log(values);
-    // Here you would typically handle form submission, e.g., call an API.
+    const { assigneeId, dueDate, ...rest } = values;
+    addTask({
+      ...rest,
+      assigneeId: assigneeId === 'unassigned' ? undefined : assigneeId,
+      sprintId: values.sprintId === 'backlog' ? undefined : values.sprintId,
+      dueDate: dueDate ? formatISO(dueDate) : undefined,
+    });
     form.reset();
     setOpen(false);
   }
@@ -162,6 +174,30 @@ export function AddTaskDialog() {
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="sprintId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sprint</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a sprint" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="backlog">Backlog</SelectItem>
+                      {availableSprints.map(sprint => (
+                        <SelectItem key={sprint.id} value={sprint.id}>{sprint.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <FormField

@@ -180,7 +180,6 @@ export const settingsLink: NavLinkData = {
 };
 
 export const currentSprint = sprints[0];
-export const sprintTasks = tasks.filter((t) => t.sprintId === currentSprint.id);
 
 export const activities: Activity[] = [
     {
@@ -226,8 +225,6 @@ export const burndownData = [
     { day: 'Day 10', ideal: 1, actual: null },
     { day: 'Day 11', ideal: 0, actual: null },
 ]
-
-export const getTasksByStatus = (status: TaskStatus) => tasks.filter(task => task.status === status);
 
 export const chatMessages: ChatMessage[] = [
   {

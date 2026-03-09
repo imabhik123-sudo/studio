@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -13,15 +15,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { currentUser, tasks } from '@/lib/data';
+import { currentUser } from '@/lib/data';
 import { TaskPriorityIcon } from '../tasks/task-priority-icon';
 import { TaskStatusBadge } from '../tasks/task-status-badge';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '../ui/button';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTasks } from '@/context/TaskProvider';
 
 export function MyTasks({ className }: { className?: string }) {
+  const { tasks } = useTasks();
   const myTasks = tasks
     .filter((task) => task.assignee?.id === currentUser.id)
     .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())

@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -6,12 +8,16 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { currentSprint, sprintTasks } from '@/lib/data';
+import { currentSprint } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { differenceInDays, format } from 'date-fns';
 import { Flag, Target } from 'lucide-react';
+import { useTasks } from '@/context/TaskProvider';
 
 export function SprintOverview({ className }: { className?: string }) {
+  const { tasks } = useTasks();
+  const sprintTasks = tasks.filter((task) => task.sprintId === currentSprint.id);
+
   const completedTasks = sprintTasks.filter(
     (task) => task.status === 'Done'
   ).length;

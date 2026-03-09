@@ -4,15 +4,18 @@ import { AppLayout } from '@/components/layout/app-layout';
 import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { tasks, users, sprints, getTasksByStatus } from '@/lib/data';
-import { TaskStatus } from '@/lib/types';
+import { users, sprints } from '@/lib/data';
+import { Task, TaskStatus } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSearchParams } from 'next/navigation';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useTasks } from '@/context/TaskProvider';
 
 const statusColumns: TaskStatus[] = ['Backlog', 'To Do', 'In Progress', 'Done'];
 
-function TasksByStatusView() {
+function TasksByStatusView({ tasks }: { tasks: Task[] }) {
+  const getTasksByStatus = (status: TaskStatus) => tasks.filter(task => task.status === status);
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {statusColumns.map((status) => (
@@ -45,7 +48,7 @@ function TasksByStatusView() {
 }
 
 
-function TasksByUserView() {
+function TasksByUserView({ tasks }: { tasks: Task[] }) {
     return (
         <div className="space-y-6">
             {users.map(user => (
@@ -81,7 +84,7 @@ function TasksByUserView() {
     )
 }
 
-function TasksBySprintView() {
+function TasksBySprintView({ tasks }: { tasks: Task[] }) {
     return (
          <div className="space-y-6">
             {sprints.map(sprint => (
@@ -117,6 +120,7 @@ export default function TasksPage() {
   const searchParams = useSearchParams();
   const sprintId = searchParams.get('sprint');
   const defaultTab = sprintId ? 'sprint' : 'status';
+  const { tasks } = useTasks();
 
   return (
     <AppLayout>
@@ -129,9 +133,9 @@ export default function TasksPage() {
               <TabsTrigger value="user">By User</TabsTrigger>
               <TabsTrigger value="sprint">By Sprint</TabsTrigger>
             </TabsList>
-            <TabsContent value="status" className="flex-1"><TasksByStatusView /></TabsContent>
-            <TabsContent value="user" className="flex-1"><TasksByUserView /></TabsContent>
-            <TabsContent value="sprint" className="flex-1"><TasksBySprintView /></TabsContent>
+            <TabsContent value="status" className="flex-1"><TasksByStatusView tasks={tasks} /></TabsContent>
+            <TabsContent value="user" className="flex-1"><TasksByUserView tasks={tasks} /></TabsContent>
+            <TabsContent value="sprint" className="flex-1"><TasksBySprintView tasks={tasks} /></TabsContent>
           </Tabs>
         </main>
       </div>
