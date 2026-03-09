@@ -154,12 +154,19 @@ export const sprints: Sprint[] = [
     endDate: formatISO(addDays(now, 7)),
     goal: 'Complete core features for the initial launch, including authentication and dashboard.',
   },
+   {
+    id: 'SPRINT-2',
+    name: 'Phoenix Sprint: Q2 Polish',
+    startDate: formatISO(subDays(now, 21)),
+    endDate: formatISO(subDays(now, 7)),
+    goal: 'Address UI feedback and fix critical bugs before the beta release.',
+  },
 ];
 
 export const navLinks: NavLinkData[] = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/sprints', label: 'Sprints', icon: IterationCw },
-  { href: '/backlog', label: 'Backlog', icon: Layers },
+  { href: '/backlog', label: 'Tasks', icon: Layers },
   { href: '/reports', label: 'Reports', icon: BarChart3 },
 ];
 

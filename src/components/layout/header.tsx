@@ -2,39 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import {
-  Bell,
-  Home,
-  LineChart,
-  Package,
-  Package2,
-  PanelLeft,
-  Plus,
-  Search,
-  Settings,
-  Users2,
-} from 'lucide-react';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import Link from 'next/link';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { currentUser } from '@/lib/data';
+import { Search } from 'lucide-react';
 import { SidebarTrigger } from '../ui/sidebar';
+import { AddTaskDialog } from '../tasks/add-task-dialog';
+import { Bell } from 'lucide-react';
 
 type HeaderProps = {
   title: string;
@@ -61,10 +32,7 @@ export function Header({ title }: HeaderProps) {
         <Bell className="h-5 w-5" />
         <span className="sr-only">Toggle notifications</span>
       </Button>
-      <Button>
-        <Plus className="mr-2 h-4 w-4" />
-        New Task
-      </Button>
+      <AddTaskDialog />
     </header>
   );
 }
