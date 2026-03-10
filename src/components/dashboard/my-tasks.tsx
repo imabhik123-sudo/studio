@@ -23,6 +23,21 @@ import { Button } from '../ui/button';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTasks } from '@/context/TaskProvider';
+import { useEffect, useState } from 'react';
+
+const DueDate = ({ date }: { date?: string }) => {
+  const [distance, setDistance] = useState('');
+
+  useEffect(() => {
+    if (date) {
+      setDistance(formatDistanceToNow(new Date(date), { addSuffix: true }));
+    } else {
+      setDistance('N/A');
+    }
+  }, [date]);
+
+  return <>{distance || '...'}</>;
+};
 
 export function MyTasks({ className }: { className?: string }) {
   const { tasks } = useTasks();
@@ -61,11 +76,7 @@ export function MyTasks({ className }: { className?: string }) {
                   <TaskStatusBadge status={task.status} />
                 </TableCell>
                 <TableCell>
-                  {task.dueDate
-                    ? formatDistanceToNow(new Date(task.dueDate), {
-                        addSuffix: true,
-                      })
-                    : 'N/A'}
+                  <DueDate date={task.dueDate} />
                 </TableCell>
               </TableRow>
             ))}

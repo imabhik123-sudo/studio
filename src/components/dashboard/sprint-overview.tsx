@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { differenceInDays, format } from 'date-fns';
 import { Flag, Target } from 'lucide-react';
 import { useTasks } from '@/context/TaskProvider';
+import { useEffect, useState } from 'react';
 
 export function SprintOverview({ className }: { className?: string }) {
   const { tasks } = useTasks();
@@ -24,7 +25,11 @@ export function SprintOverview({ className }: { className?: string }) {
   const totalTasks = sprintTasks.length;
   const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
-  const daysRemaining = differenceInDays(new Date(currentSprint.endDate), new Date());
+  const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    setDaysRemaining(differenceInDays(new Date(currentSprint.endDate), new Date()));
+  }, []);
 
   return (
     <Card className={cn('h-full', className)}>
@@ -49,10 +54,12 @@ export function SprintOverview({ className }: { className?: string }) {
           <Progress value={progress} />
           <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
             <span>{`${completedTasks} / ${totalTasks} tasks completed`}</span>
-            <div className="flex items-center">
-              <Flag className="h-3 w-3 mr-1" />
-              <span>{`${daysRemaining > 0 ? daysRemaining : 0} days left`}</span>
-            </div>
+            {daysRemaining !== null && (
+              <div className="flex items-center">
+                <Flag className="h-3 w-3 mr-1" />
+                <span>{`${daysRemaining > 0 ? daysRemaining : 0} days left`}</span>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>

@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Card,
   CardContent,
@@ -10,6 +12,21 @@ import { activities } from '@/lib/data';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
+import { useState, useEffect } from 'react';
+
+const TimeAgo = ({ date }: { date: string }) => {
+  const [timeAgo, setTimeAgo] = useState('');
+
+  useEffect(() => {
+    setTimeAgo(formatDistanceToNow(new Date(date), { addSuffix: true }));
+  }, [date]);
+
+  return (
+    <p className="text-xs text-muted-foreground">
+      {timeAgo || '...'}
+    </p>
+  );
+};
 
 export function ActivityFeed({ className }: { className?: string }) {
   return (
@@ -33,11 +50,7 @@ export function ActivityFeed({ className }: { className?: string }) {
                     {activity.action}{' '}
                     <span className="font-semibold text-primary">{activity.target}</span>
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(activity.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </p>
+                  <TimeAgo date={activity.createdAt} />
                 </div>
               </div>
             ))}
