@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
+import { usePathname, useRouter } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -16,14 +15,58 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { currentUser, navLinks, settingsLink } from '@/lib/data';
+import { navLinks, settingsLink } from '@/lib/data';
 import { Logo } from '@/components/icons/logo';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '../ui/button';
-import { Bell, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
+import { useUser } from '@/firebase';
+import { useEffect } from 'react';
+import { getAuth } from 'firebase/auth';
+import { Skeleton } from '../ui/skeleton';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, loading } = useUser();
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
+  
+  const handleLogout = async () => {
+    const auth = getAuth();
+    await auth.signOut();
+    router.push('/login');
+  };
+
+  if (loading) {
+    return (
+        <div className="flex min-h-screen">
+            <div className="p-4">
+                <Skeleton className="h-10 w-10 rounded-lg" />
+                <div className="space-y-2 mt-4">
+                    <Skeleton className="h-8 w-48" />
+                    <Skeleton className="h-8 w-48" />
+                    <Skeleton className="h-8 w-48" />
+                </div>
+            </div>
+            <main className="flex-1 p-6">
+                <Skeleton className="h-full w-full" />
+            </main>
+        </div>
+    )
+  }
+
+  if (!user) {
+    return null; // or a redirect, though useEffect handles it.
+  }
+
+  const displayName = user.name;
+  const avatarUrl = user.avatarUrl;
+  const avatarFallback = displayName.charAt(0).toUpperCase();
 
   return (
     <SidebarProvider>
@@ -88,17 +131,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="p-2 flex items-center gap-3">
                   <Avatar className="h-9 w-9">
                     <AvatarImage
-                      src={currentUser.avatarUrl}
-                      alt={currentUser.name}
+                      src={avatarUrl}
+                      alt={displayName}
                       data-ai-hint="woman portrait"
                     />
                     <AvatarFallback>
-                      {currentUser.name.charAt(0)}
+                      {avatarFallback}
                     </AvatarFallback>
                   </Avatar>
                   <div className="overflow-hidden transition-all duration-300 group-data-[collapsible=offcanvas]:hidden group-data-[collapsible=icon]:w-0">
                     <p className="text-sm font-medium text-sidebar-foreground truncate">
-                      {currentUser.name}
+                      {displayName}
                     </p>
                     <p className="text-xs text-sidebar-foreground/70 truncate">
                       Product Manager
@@ -107,6 +150,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <Button
                     variant="ghost"
                     size="icon"
+                    onClick={handleLogout}
                     className="ml-auto text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent group-data-[collapsible=offcanvas]:hidden group-data-[collapsible=icon]:w-0"
                   >
                     <LogOut className="h-4 w-4" />

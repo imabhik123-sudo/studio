@@ -15,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { currentUser } from '@/lib/data';
 import { TaskPriorityIcon } from '../tasks/task-priority-icon';
 import { TaskStatusBadge } from '../tasks/task-status-badge';
 import { formatDistanceToNow } from 'date-fns';
@@ -24,6 +23,7 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTasks } from '@/context/TaskProvider';
 import { useEffect, useState } from 'react';
+import { useUser } from '@/firebase';
 
 const DueDate = ({ date }: { date?: string }) => {
   const [distance, setDistance] = useState('');
@@ -41,8 +41,9 @@ const DueDate = ({ date }: { date?: string }) => {
 
 export function MyTasks({ className }: { className?: string }) {
   const { tasks } = useTasks();
+  const { user: currentUser } = useUser();
   const myTasks = tasks
-    .filter((task) => task.assignee?.id === currentUser.id)
+    .filter((task) => task.assignee?.id === currentUser?.id)
     .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
     .slice(0, 5);
 

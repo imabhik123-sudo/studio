@@ -48,8 +48,6 @@ export const users: User[] = [
   },
 ];
 
-export const currentUser: User = users[0];
-
 const now = new Date();
 
 export const tasks: Task[] = [
@@ -230,14 +228,14 @@ export const chatMessages: ChatMessage[] = [
   {
     id: 'msg-1',
     sender: users[1],
-    receiver: currentUser,
+    receiver: users[0],
     content: "Hey Alice, just wanted to check in on the progress for TASK-102. How's the authentication API coming along?",
     createdAt: formatISO(subMinutes(now, 65)),
     isRead: false,
   },
   {
     id: 'msg-2',
-    sender: currentUser,
+    sender: users[0],
     receiver: users[1],
     content: "Hi Bob! It's going well. I've hit a small snag with the token refresh logic, but I should have it sorted out by EOD.",
     createdAt: formatISO(subMinutes(now, 60)),
@@ -246,7 +244,7 @@ export const chatMessages: ChatMessage[] = [
   {
     id: 'msg-3',
     sender: users[1],
-    receiver: currentUser,
+    receiver: users[0],
     content: "Great to hear. Let me know if you need a second pair of eyes on it. Happy to help.",
     createdAt: formatISO(subMinutes(now, 58)),
     isRead: false,
@@ -254,14 +252,14 @@ export const chatMessages: ChatMessage[] = [
   {
     id: 'msg-4',
     sender: users[2],
-    receiver: currentUser,
+    receiver: users[0],
     content: "Quick question about the dashboard design. Do we have the final assets for the icons?",
     createdAt: formatISO(subDays(now, 1)),
     isRead: true,
   },
   {
     id: 'msg-5',
-    sender: currentUser,
+    sender: users[0],
     receiver: users[2],
     content: "Hey Charlie, I believe so. They should be in the shared Figma file. I'll send you the link.",
     createdAt: formatISO(subDays(now, 1)),
@@ -270,14 +268,14 @@ export const chatMessages: ChatMessage[] = [
   {
     id: 'msg-6',
     sender: users[3],
-    receiver: currentUser,
+    receiver: users[0],
     content: "The CI/CD pipeline is ready for its first test run. Let me know when you have a feature branch ready.",
     createdAt: formatISO(subDays(now, 2)),
     isRead: true,
   }
 ];
 
-export const getChatsForCurrentUser = () => {
+export const getChatsForCurrentUser = (currentUser: User) => {
     const chats: Record<string, ChatMessage[]> = {};
     chatMessages.forEach(message => {
         const otherUser = message.sender.id === currentUser.id ? message.receiver : message.sender;

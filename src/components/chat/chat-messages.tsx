@@ -1,6 +1,6 @@
 'use client';
 import { User, ChatMessage } from '@/lib/types';
-import { getChatsForCurrentUser, currentUser } from '@/lib/data';
+import { getChatsForCurrentUser } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,14 +9,16 @@ import { cn } from '@/lib/utils';
 import { format, isToday } from 'date-fns';
 import { ScrollArea } from '../ui/scroll-area';
 import { useEffect, useRef } from 'react';
+import { useUser } from '@/firebase';
 
 interface ChatMessagesProps {
   user: User;
 }
 
-export function ChatMessages({ user }: ChatMessagesProps) {
-    const allChats = getChatsForCurrentUser();
-    const messages = allChats[user.id] || [];
+export function ChatMessages({ user: selectedUser }: ChatMessagesProps) {
+    const { user: currentUser } = useUser();
+    const allChats = currentUser ? getChatsForCurrentUser(currentUser) : {};
+    const messages = allChats[selectedUser.id] || [];
     const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -26,7 +28,7 @@ export function ChatMessages({ user }: ChatMessagesProps) {
                 viewport.scrollTop = viewport.scrollHeight;
             }
         }
-    }, [messages]);
+    }, [messages, selectedUser]);
 
 
   const formatTimestamp = (timestamp: string) => {
@@ -41,23 +43,23 @@ export function ChatMessages({ user }: ChatMessagesProps) {
     <div className="flex flex-col h-full">
       <header className="flex items-center gap-3 p-4 border-b">
         <Avatar>
-          <AvatarImage src={user.avatarUrl} alt={user.name} />
-          <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+          <AvatarImage src={selectedUser.avatarUrl} alt={selectedUser.name} />
+          <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <h2 className="text-lg font-semibold">{user.name}</h2>
+        <h2 className="text-lg font-semibold">{selectedUser.name}</h2>
       </header>
 
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-4">
-          {messages.map((message, index) => (
+          {messages.map((message) => (
             <div
               key={message.id}
               className={cn(
                 'flex items-end gap-2',
-                message.sender.id === currentUser.id ? 'justify-end' : 'justify-start'
+                message.sender.id === currentUser?.id ? 'justify-end' : 'justify-start'
               )}
             >
-              {message.sender.id !== currentUser.id && (
+              {message.sender.id !== currentUser?.id && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={message.sender.avatarUrl} alt={message.sender.name} />
                   <AvatarFallback>{message.sender.name.charAt(0)}</AvatarFallback>
@@ -66,7 +68,7 @@ export function ChatMessages({ user }: ChatMessagesProps) {
               <div
                 className={cn(
                   'max-w-md rounded-lg p-3',
-                  message.sender.id === currentUser.id
+                  message.sender.id === currentUser?.id
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted'
                 )}
@@ -74,12 +76,12 @@ export function ChatMessages({ user }: ChatMessagesProps) {
                 <p className="text-sm">{message.content}</p>
                  <p className={cn(
                      "text-xs mt-1",
-                     message.sender.id === currentUser.id ? "text-primary-foreground/70" : "text-muted-foreground"
+                     message.sender.id === currentUser?.id ? "text-primary-foreground/70" : "text-muted-foreground"
                      )}>
                     {formatTimestamp(message.createdAt)}
                 </p>
               </div>
-               {message.sender.id === currentUser.id && (
+               {message.sender.id === currentUser?.id && currentUser && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
                   <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
