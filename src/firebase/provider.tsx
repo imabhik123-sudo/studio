@@ -4,7 +4,6 @@ import { createContext, useContext, ReactNode } from 'react';
 import { Auth } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 import { FirebaseApp } from 'firebase/app';
-import { auth, firestore, firebaseApp } from '@/firebase';
 
 interface FirebaseContextType {
   app: FirebaseApp;
@@ -14,11 +13,15 @@ interface FirebaseContextType {
 
 const FirebaseContext = createContext<FirebaseContextType | null>(null);
 
-export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
+export const FirebaseProvider = ({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: FirebaseContextType;
+}) => {
   return (
-    <FirebaseContext.Provider value={{ app: firebaseApp, auth, firestore }}>
-      {children}
-    </FirebaseContext.Provider>
+    <FirebaseContext.Provider value={value}>{children}</FirebaseContext.Provider>
   );
 };
 
